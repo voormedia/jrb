@@ -1,6 +1,4 @@
 source "http://rubygems.org"
 
-group :development do
-  gem "jeweler", "~> 1.5.2"
-  gem "activerecord", "~> 3.0"
-end
+# Specify your gem's dependencies in jrb.gemspec
+gemspec

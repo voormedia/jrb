@@ -1,3 +1,5 @@
-module JRB
-  require "jrb/rails/railtie" if defined?(Rails)
-end
+require "tilt"
+require "jrb/template"
+require "jrb/rails" if defined?(Rails)
+
+Tilt.register JRB::Template, "rb"
