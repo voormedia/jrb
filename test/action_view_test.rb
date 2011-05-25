@@ -13,4 +13,9 @@ class ActionViewTest < ActionController::TestCase
     get :index, :name => "<script>unsafe</script>"
     assert_equal "<html><head></head><body>Hello &lt;script&gt;unsafe&lt;/script&gt;!</body></html>", response.body
   end
+  
+  test "capturing content" do
+    get :capture, :name => "John"
+    assert_equal "<html><head></head><body>Hello John!</body></html>", response.body
+  end
 end

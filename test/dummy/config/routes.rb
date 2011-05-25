@@ -1,3 +1,3 @@
 Dummy::Application.routes.draw do
-  get "/" => "test#index"
+  get "/:action" => "test"
 end
