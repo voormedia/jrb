@@ -2,7 +2,7 @@
 require File.expand_path("test_helper", File.dirname(__FILE__))
 require "tempfile"
 
-class TiltTemplateTest < ActiveSupport::TestCase
+class TemplateTest < ActiveSupport::TestCase
   test "registered for .rb files" do
     assert Tilt.mappings["rb"].include?(JRB::Template)
   end
@@ -42,7 +42,7 @@ class TiltTemplateTest < ActiveSupport::TestCase
     scope.instance_variable_set :@name, '<script>Joe</script>'
     assert_equal "Hey <script>Joe</script>!", template.render(scope)
   end
-  
+
   test "value equals output buffer" do
     template = JRB::Template.new { '__output_buffer << "Hey #{name}!"; __output_buffer' }
     assert_equal "Hey Joe!", template.render(Object.new, :name => 'Joe')
@@ -53,6 +53,37 @@ class TiltTemplateTest < ActiveSupport::TestCase
     assert_equal "Hey Joe!", template.render(Object.new, :name => 'Joe')
     assert_equal "Hey Jane!", template.render(Object.new, :name => 'Jane')
   end
+
+  test "defining a method" do
+    template = JRB::Template.new {
+      <<-RUBY
+      def greet(target)
+        write "Hey \#{target}!"
+      end
+      greet(name)
+      RUBY
+    }
+    assert_equal "Hey Joe!", template.render(Object.new, :name => 'Joe')
+  end
+
+  test "defining a class" do
+    template = JRB::Template.new {
+      <<-RUBY
+      class Greeter
+        def initialize(target)
+          @target = target
+        end
+
+        def greet
+          "Hey \#{@target}!"
+        end
+      end
+      write Greeter.new(name).greet
+      RUBY
+    }
+    assert_equal "Hey Joe!", template.render(Object.new, :name => 'Joe')
+  end
+
   test "passing a block for yield" do
     template = JRB::Template.new { '"Hey #{yield}!"' }
     assert_equal "Hey Joe!", template.render { 'Joe' }
@@ -89,7 +120,7 @@ class TiltTemplateTest < ActiveSupport::TestCase
   end
 end
 
-class CompiledTiltTemplateTest < ActiveSupport::TestCase
+class CompiledTemplateTest < ActiveSupport::TestCase
   class Scope
   end
 
@@ -119,7 +150,7 @@ class CompiledTiltTemplateTest < ActiveSupport::TestCase
     scope.instance_variable_set :@name, 'Jane'
     assert_equal "Hey Jane!", template.render(scope)
   end
-  
+
   test "automatic output escaping" do
     template = JRB::Template.new { '"Hey #{@name}!"' }
     scope = Scope.new
@@ -133,7 +164,7 @@ class CompiledTiltTemplateTest < ActiveSupport::TestCase
     scope.instance_variable_set :@name, '<script>Joe</script>'
     assert_equal "Hey <script>Joe</script>!", template.render(scope)
   end
-  
+
   test "value equals output buffer" do
     template = JRB::Template.new { '__output_buffer << "Hey #{name}!"; __output_buffer' }
     assert_equal "Hey Joe!", template.render(Scope.new, :name => 'Joe')
