@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    jrb (0.1.0)
+    jrb (0.2.0)
       tilt (~> 1.3)
 
 GEM

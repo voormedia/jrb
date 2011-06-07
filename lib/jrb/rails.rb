@@ -1,9 +1,12 @@
 module JRB
   module Rails
     class TemplateHandler
+      HTML_MIME_TYPES = ["text/html", "application/xhtml+xml"]
+      
       class << self
         def call(template)
-          tilt_template = JRB::Template.new(template.identifier) { template.source }
+          auto_escape = HTML_MIME_TYPES.include? template.mime_type
+          tilt_template = JRB::Template.new(template.identifier, 1, :escape_html => auto_escape) { template.source }
           tilt_template.send(:precompiled, {}).first
         end
       end
