@@ -21,9 +21,9 @@ class ActionViewTest < ActionController::TestCase
 
   test "not escaping html characters in json templates" do
     get :index, :name => "<script>safe</script>", :format => :json
-    assert_equal '{"greeting":"Hello <script>safe</script>!"}', response.body
+    assert_equal '{"greeting":"Hello \\u003Cscript\\u003Esafe\\u003C/script\\u003E!"}', response.body
   end
-  
+
   test "capturing content" do
     get :capture, :name => "John"
     assert_equal "<html><head></head><body>Hello John!</body></html>", response.body
